@@ -1,6 +1,7 @@
 package com.example.campusnavigator_compose
 
 import androidx.compose.foundation.layout.Box
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,9 +39,8 @@ sealed class Screen(val route: String, val label: String) {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: SeleccionViewModel = viewModel()) {
     val navController = rememberNavController()
-    var edificioSeleccionado by remember { mutableStateOf("Ninguno") }
     val items = listOf(Screen.Home, Screen.Edificios, Screen.Mapa)
 
     Scaffold(
@@ -58,9 +58,9 @@ fun MainScreen() {
 
                     NavigationBarItem(
                         selected = currentRoute == screen.route,
-                        onClick = { navController.navigate(screen.route) },
-                        icon = { Icon(icon, contentDescription = screen.label) },
-                        label = { Text(screen.label) }
+                    onClick = { navController.navigate(screen.route) },
+                    icon = { Icon(icon, contentDescription = screen.label) },
+                    label = { Text(screen.label) }
                     )
                 }
             }
@@ -68,25 +68,21 @@ fun MainScreen() {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
-            modifier = Modifier.padding(padding)
+        startDestination = Screen.Home.route,
+        modifier = Modifier.padding(padding)
         ) {
-            composable(Screen.Home.route) {
-                HomeScreen(edificioSeleccionado = edificioSeleccionado)
-            }
-
-            composable(Screen.Edificios.route) {
-                EdificiosScreen(
-                    onEdificioSeleccionado = { nombre ->
-                        edificioSeleccionado = nombre
-                    }
-                )
-            }
-
-            composable(Screen.Mapa.route) {
-                MapaScreen()
-            }
+        composable(Screen.Home.route) {
+            HomeScreen(edificioSeleccionado = viewModel.edificioSeleccionado)
         }
+
+        composable(Screen.Edificios.route) {
+            EdificiosScreen(viewModel = viewModel)
+        }
+
+        composable(Screen.Mapa.route) {
+            MapaScreen()
+        }
+    }
     }
 }
 
@@ -104,7 +100,7 @@ fun HomeScreen(edificioSeleccionado: String) {
 }
 
 @Composable
-fun EdificiosScreen(onEdificioSeleccionado: (String) -> Unit) {
+fun EdificiosScreen(viewModel: SeleccionViewModel) {
     val edificios = listOf("Biblioteca Central", "Pabellón A", "Pabellón B", "Auditorio")
 
     LazyColumn(
@@ -117,10 +113,12 @@ fun EdificiosScreen(onEdificioSeleccionado: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = nombre, modifier = Modifier.weight(1f))
-                Button(onClick = { onEdificioSeleccionado(nombre) }) {
+
+                // Punto 3: Actualiza directamente el valor en el ViewModel en vez de invocar una función lambda[cite: 2]
+                Button(onClick = { viewModel.seleccionarEdificio(nombre) }) {
                     Text("Ver")
                 }
             }
@@ -137,3 +135,4 @@ fun MapaScreen() {
         Text(text = "Mapa de ubicaciones (pendiente de integrar)")
     }
 }
+
