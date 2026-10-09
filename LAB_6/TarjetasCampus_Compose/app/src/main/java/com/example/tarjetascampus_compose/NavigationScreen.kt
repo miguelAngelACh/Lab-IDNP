@@ -35,7 +35,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
-// Modelo de datos y lista de 4 edificios (Ejercicio 3)[cite: 33]
 data class Edificio(
     val nombre: String,
     val descripcion: String,
@@ -146,7 +145,6 @@ fun MainScreen(viewModel: SeleccionViewModel = viewModel()) {
     }
 }
 
-// Pantalla Edificios con los dos estilos y eventos clicables (Ejercicio 2 y 3)[cite: 31, 34]
 @Composable
 fun EdificiosScreen(viewModel: SeleccionViewModel, navController: NavController) {
     LazyColumn(
@@ -194,13 +192,51 @@ fun EdificiosScreen(viewModel: SeleccionViewModel, navController: NavController)
                 modifier = Modifier.clickable {
                     viewModel.seleccionarEdificio(edificio.nombre)
                     navController.navigate("detalle/$indice")
+
+
+                }
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Estilo 3 — Tarjeta con Insignia (Reto Opcional)",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+        }
+        itemsIndexed(listaEdificios) { indice, edificio ->
+            val etiqueta = when (indice) {
+                0 -> "Central"
+                1 -> "Estudio"
+                2 -> "Comedor"
+                else -> "Aulas"
+            }
+            val colorTag = when (indice) {
+                0 -> Color(0xFF1565C0)
+                1 -> Color(0xFF2E7D32)
+                2 -> Color(0xFFE65100)
+                else -> Color(0xFF6A1B9A)
+            }
+
+            TarjetaEtiquetada(
+                nombre = edificio.nombre,
+                descripcion = edificio.descripcion,
+                imagen = painterResource(id = edificio.imagenRes),
+                etiqueta = etiqueta,
+                colorEtiqueta = colorTag,
+                modifier = Modifier.clickable {
+                    viewModel.seleccionarEdificio(edificio.nombre)
+                    navController.navigate("detalle/$indice")
                 }
             )
         }
     }
 }
 
-// Pantalla de Detalle Reutilizable (Ejercicio 1)[cite: 28, 29]
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleLugarScreen(
@@ -267,7 +303,6 @@ fun DetalleLugarScreen(
     }
 }
 
-// Componentes gráficos reutilizables (Estilo 1 y Estilo 2)
 @Composable
 fun TarjetaLugar(
     nombre: String,
@@ -361,5 +396,70 @@ fun MapaScreen() {
 fun PerfilScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text("Perfil de Usuario")
+    }
+}
+
+@Composable
+fun TarjetaEtiquetada(
+    nombre: String,
+    descripcion: String,
+    imagen: Painter,
+    etiqueta: String,
+    colorEtiqueta: Color = Color(0xFF2E7D32),
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFFFAFAFA))
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(14.dp)
+        ) {
+            Image(
+                painter = imagen,
+                contentDescription = nombre,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(RoundedCornerShape(12.dp))
+            )
+
+            Spacer(modifier = Modifier.width(14.dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(0.85f)
+            ) {
+                Text(
+                    text = nombre,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
+                    color = Color(0xFF1E1E1E)
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = descripcion,
+                    fontSize = 13.sp,
+                    color = Color.Gray,
+                    maxLines = 2
+                )
+            }
+        }
+
+        Surface(
+            color = colorEtiqueta,
+            shape = RoundedCornerShape(bottomStart = 10.dp),
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            Text(
+                text = etiqueta.uppercase(),
+                color = Color.White,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+            )
+        }
     }
 }
