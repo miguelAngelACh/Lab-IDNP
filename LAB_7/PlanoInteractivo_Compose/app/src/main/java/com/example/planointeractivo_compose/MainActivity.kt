@@ -26,12 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.planointeractivo_compose.ui.theme.PlanoInteractivo_ComposeTheme
 
-data class Marcador(
-    val offset: Offset,
-    val radio: Float,
-    val titulo: String,
-    val descripcion: String
-)
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +34,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PlanoInteractivo_ComposeTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    PlanoAmbiente()
+                    PlanoAmbienteScreen()
                 }
             }
         }
